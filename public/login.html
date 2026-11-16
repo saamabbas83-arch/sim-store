@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#667eea">
+<title>Sim Store - تسجيل الدخول</title>
+<link rel="manifest" href="/manifest.json">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,sans-serif}
+body{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;overflow-x:hidden}
+.card{background:rgba(255,255,255,0.1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.2);border-radius:28px;padding:32px 28px;width:100%;max-width:380px;box-shadow:0 25px 60px rgba(0,0,0,0.4);animation:rise .8s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.logo-wrap{text-align:center;margin-bottom:24px}
+.logo-container{position:relative;width:100px;height:100px;margin:0 auto 16px}
+.logo-bg{position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.2),rgba(255,255,255,0.05));border-radius:28px;border:2px solid rgba(255,255,255,0.3);box-shadow:0 10px 30px rgba(0,0,0,0.3);animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 10px 30px rgba(0,0,0,0.3)}50%{transform:scale(1.05);box-shadow:0 15px 40px rgba(0,0,0,0.4)}}
+.logo-svg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.logo-svg svg{width:70px;height:70px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3))}
+.logo-title{font-size:28px;font-weight:800;letter-spacing:1px;background:linear-gradient(90deg,#fff,#e0e7ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:0 2px 10px rgba(0,0,0,0.2);margin-bottom:4px}
+.logo-sub{font-size:12px;color:rgba(255,255,255,0.85);letter-spacing:.5px;font-weight:500}
+.tabs{display:flex;background:rgba(0,0,0,0.25);border-radius:12px;padding:4px;margin-bottom:20px}
+.tab{flex:1;padding:10px;text-align:center;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:0.3s;color:rgba(255,255,255,0.65)}
+.tab.active{background:rgba(255,255,255,0.22);color:#fff;box-shadow:0 4px 15px rgba(0,0,0,0.2)}
+.input-group{margin-bottom:14px}
+.input-group label{display:block;font-size:13px;color:rgba(255,255,255,0.9);margin-bottom:6px;font-weight:600}
+.input-group input,.input-group select{width:100%;padding:14px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);border-radius:12px;color:#fff;font-size:15px;outline:none;transition:0.3s}
+.input-group input::placeholder{color:rgba(255,255,255,0.5)}
+.input-group input:focus,.input-group select:focus{border-color:rgba(255,255,255,0.5);background:rgba(255,255,255,0.22);box-shadow:0 0 0 3px rgba(255,255,255,0.1)}
+.input-group select{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 14px center;padding-left:36px}
+.input-group select option{background:#764ba2;color:#fff}
+.btn{width:100%;padding:15px;background:rgba(255,255,255,0.95);color:#764ba2;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;margin-top:8px;transition:0.3s;box-shadow:0 10px 25px rgba(0,0,0,0.2)}
+.btn:hover{background:#fff;transform:translateY(-2px);box-shadow:0 15px 35px rgba(0,0,0,0.3)}
+.btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.google-btn-wrap{margin-top:15px;display:flex;justify-content:center}
+.google-btn-wrap button{background:#fff;color:#3c4043;border:none;border-radius:12px;padding:12px 20px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;box-shadow:0 4px 15px rgba(0,0,0,0.1);transition:0.3s}
+.google-btn-wrap button:hover{background:#f8f9fa;transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.15)}
+.google-btn-wrap button img{width:20px;height:20px}
+.divider{display:flex;align-items:center;margin:18px 0;color:rgba(255,255,255,0.5);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.2)}
+.divider span{padding:0 12px}
+.msg{text-align:center;margin-top:14px;font-size:14px;min-height:20px}
+.msg.error{color:#ffb4b4}
+.msg.success{color:#b4ffc4}
+.switch{text-align:center;margin-top:18px;font-size:13px;color:rgba(255,255,255,0.85)}
+.switch a{color:#fff;text-decoration:none;font-weight:700;border-bottom:1px dashed rgba(255,255,255,0.5);padding-bottom:1px;transition:0.2s}
+.switch a:hover{border-bottom-style:solid}
+.support{margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.2)}
+.support-title{text-align:center;font-size:12px;color:rgba(255,255,255,0.85);margin-bottom:10px;font-weight:600}
+.support-icons{display:flex;justify-content:center;gap:12px}
+.support-icon{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:18px;transition:0.3s;border:1px solid rgba(255,255,255,0.2)}
+.support-icon:hover{transform:translateY(-3px);background:rgba(255,255,255,0.28);border-color:rgba(255,255,255,0.4)}
+.honeypot{display:none!important}
+.user-info{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:16px;padding:22px;margin-bottom:18px;text-align:center}
+.user-info .avatar{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 10px;border:2px solid rgba(255,255,255,0.35);overflow:hidden}
+.user-info .avatar img{width:100%;height:100%;object-fit:cover}
+.user-info .name{font-size:18px;font-weight:700;margin-bottom:4px}
+.user-info .email{font-size:13px;color:rgba(255,255,255,0.85);word-break:break-all}
+.user-info .last-login{font-size:11px;color:rgba(255,255,255,0.6);margin-top:8px}
+.btn-logout{background:rgba(255,255,255,0.15);color:#fff;margin-top:10px}
+.btn-logout:hover{background:rgba(255,255,255,0.28)}
+.trust-line{text-align:center;margin-top:16px;font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:.3px}
+</style>
+</head>
+<body>
+
+<div class="card" id="loginCard">
+  <div class="logo-wrap">
+    <div class="logo-container">
+      <div class="logo-bg"></div>
+      <div class="logo-svg">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:1" />
+            </linearGradient>
+            <filter id="glow"><feGaussianBlur stdDeviation="2" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <path d="M 30 35 Q 30 25 40 25 L 60 25 Q 70 25 70 35 Q 70 45 60 45 L 40 45 Q 30 45 30 55 Q 30 65 40 65 L 60 65 Q 70 65 70 55" fill="none" stroke="url(#logoGrad)" stroke-width="8" stroke-linecap="round" filter="url(#glow)"/>
+          <circle cx="30" cy="35" r="4" fill="#fff" filter="url(#glow)"/>
+          <circle cx="70" cy="55" r="4" fill="#fff" filter="url(#glow)"/>
+          <path d="M 75 30 Q 80 35 75 40" fill="none" stroke="#fff" stroke-width="2" opacity="0.6"/>
+          <path d="M 80 25 Q 88 35 80 45" fill="none" stroke="#fff" stroke-width="2" opacity="0.4"/>
+        </svg>
+      </div>
+    </div>
+    <div class="logo-title">Sim Store</div>
+    <div class="logo-sub">منصتك الذكية للأرقام الدائمة</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('email')">📧 البريد</div>
+    <div class="tab" onclick="switchTab('phone')">📱 الهاتف</div>
+  </div>
+
+  <form id="authForm" onsubmit="handleAuth(event)">
+    <input type="text" name="website_url" class="honeypot" tabindex="-1" autocomplete="off">
+    <div class="input-group" id="emailGroup">
+      <label>البريد الإلكتروني</label>
+      <input type="email" id="email" placeholder="example@gmail.com" required autocomplete="email">
+    </div>
+    <div id="phoneFields" style="display:none;">
+      <div class="input-group">
+        <label>الدولة</label>
+        <select id="country" onchange="updatePhonePlaceholder()">
+          <option value="+963">🇸🇾 سوريا (+963)</option>
+          <option value="+961">🇱🇧 لبنان (+961)</option>
+          <option value="+962">🇯🇴 الأردن (+962)</option>
+          <option value="+964">🇮🇶 العراق (+964)</option>
+          <option value="+966">🇸🇦 السعودية (+966)</option>
+          <option value="+971">🇦🇪 الإمارات (+971)</option>
+          <option value="+973">🇧🇭 البحرين (+973)</option>
+          <option value="+974">🇶🇦 قطر (+974)</option>
+          <option value="+968">🇴🇲 عمان (+968)</option>
+          <option value="+965">🇰🇼 الكويت (+965)</option>
+          <option value="+967">🇾🇪 اليمن (+967)</option>
+          <option value="+20">🇪🇬 مصر (+20)</option>
+          <option value="+212">🇲🇦 المغرب (+212)</option>
+          <option value="+213">🇩🇿 الجزائر (+213)</option>
+          <option value="+216">🇹🇳 تونس (+216)</option>
+          <option value="+218">🇱🇾 ليبيا (+218)</option>
+          <option value="+249">🇸🇩 السودان (+249)</option>
+          <option value="+970">🇵🇸 فلسطين (+970)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>رقم الهاتف</label>
+        <input type="tel" id="phone" placeholder="9XXXXXXXX" autocomplete="tel">
+      </div>
+    </div>
+    <div class="input-group">
+      <label>كلمة المرور</label>
+      <input type="password" id="password" placeholder="••••••••" required minlength="6" autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn" id="submitBtn">تسجيل الدخول</button>
+    <div class="msg" id="msg"></div>
+    <div class="switch" id="switchText">ليس لديك حساب؟ <a href="#" onclick="toggleMode();return false;">إنشاء حساب جديد</a></div>
+  </form>
+
+  <div class="divider"><span>أو المتابعة عبر</span></div>
+
+  <div class="google-btn-wrap">
+    <button onclick="handleGoogleLogin()">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+      المتابعة باستخدام Google
+    </button>
+  </div>
+
+  <!-- جملة ثقة بسيطة وأنيقة -->
+  <div class="trust-line">🛡️ منصة آمنة وموثوقة 100%</div>
+
+  <div class="support">
+    <div class="support-title">🎧 فريق الدعم الفني متاح 24/7</div>
+    <div class="support-icons">
+      <a href="https://wa.me/963900000000" class="support-icon" title="واتساب">💬</a>
+      <a href="https://t.me/simstore_support" class="support-icon" title="تيليجرام">✈️</a>
+      <a href="mailto:support@simstore.com" class="support-icon" title="بريد إلكتروني">📧</a>
+    </div>
+  </div>
+</div>
+
+<div class="card" id="userCard" style="display:none;">
+  <div class="logo-wrap">
+    <div class="logo-container">
+      <div class="logo-bg"></div>
+      <div class="logo-svg">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="logoGrad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" /><stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:1" /></linearGradient></defs>
+          <path d="M 30 35 Q 30 25 40 25 L 60 25 Q 70 25 70 35 Q 70 45 60 45 L 40 45 Q 30 45 30 55 Q 30 65 40 65 L 60 65 Q 70 65 70 55" fill="none" stroke="url(#logoGrad2)" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="30" cy="35" r="4" fill="#fff"/><circle cx="70" cy="55" r="4" fill="#fff"/>
+        </svg>
+      </div>
+    </div>
+    <div class="logo-title">مرحباً بك</div>
+    <div class="logo-sub">تم تسجيل دخولك بنجاح</div>
+  </div>
+  <div class="user-info">
+    <div class="avatar" id="userAvatar">👤</div>
+    <div class="name" id="userName">مستخدم Sim Store</div>
+    <div class="email" id="userEmail"></div>
+    <div class="last-login" id="lastLogin"></div>
+  </div>
+  <button class="btn" onclick="goToDashboard()">الذهاب إلى لوحة التحكم</button>
+  <button class="btn btn-logout" onclick="logout()">تسجيل الخروج</button>
+</div>
+
+<script>
+let isLogin = true;
+let currentMethod = 'email';
+let failedAttempts = 0;
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_TIME = 15 * 60 * 1000;
+
+window.addEventListener('load', () => {
+  const savedUser = localStorage.getItem('simUser');
+  const lockoutEnd = localStorage.getItem('lockoutEnd');
+  
+  if (lockoutEnd && Date.now() < parseInt(lockoutEnd)) {
+    const remaining = Math.ceil((parseInt(lockoutEnd) - Date.now()) / 60000);
+    showLockoutMessage(remaining);
+    return;
+  }
+  
+  if (savedUser) {
+    try { showUserCard(JSON.parse(savedUser)); } catch(e) { localStorage.removeItem('simUser'); }
+  }
+});
+
+function showLockoutMessage(minutes) {
+  document.getElementById('loginCard').style.display = 'none';
+  const card = document.getElementById('userCard');
+  card.style.display = 'block';
+  card.innerHTML = `
+    <div class="logo-wrap">
+      <div class="logo-container"><div class="logo-bg"></div></div>
+      <div class="logo-title" style="color:#ff6b6b">⚠️ حساب مقفل مؤقتاً</div>
+    </div>
+    <div class="msg error" style="margin:20px 0">
+      تم قفل الحساب لمدة ${minutes} دقيقة بسبب محاولات فاشلة متعددة.<br>
+      يرجى المحاولة لاحقاً أو التواصل مع الدعم.
+    </div>
+    <button class="btn btn-logout" onclick="clearLockout()">مسح القفل (للمطورين)</button>
+  `;
+}
+
+function clearLockout() {
+  localStorage.removeItem('lockoutEnd');
+  localStorage.removeItem('failedAttempts');
+  location.reload();
+}
+
+function switchTab(method) {
+  currentMethod = method;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  if(method === 'email') {
+    document.getElementById('emailGroup').style.display = 'block';
+    document.getElementById('phoneFields').style.display = 'none';
+    document.getElementById('email').required = true;
+    document.getElementById('phone').required = false;
+  } else {
+    document.getElementById('emailGroup').style.display = 'none';
+    document.getElementById('phoneFields').style.display = 'block';
+    document.getElementById('email').required = false;
+    document.getElementById('phone').required = true;
+  }
+}
+
+function updatePhonePlaceholder() {
+  const code = document.getElementById('country').value;
+  document.getElementById('phone').placeholder = code.replace('+', '') + 'XXXXXXXXX';
+}
+
+function toggleMode() {
+  isLogin = !isLogin;
+  const btn = document.getElementById('submitBtn');
+  const switchText = document.getElementById('switchText');
+  const title = document.querySelector('.logo-title');
+  if (isLogin) {
+    btn.textContent = 'تسجيل الدخول'; title.textContent = 'Sim Store';
+    switchText.innerHTML = 'ليس لديك حساب؟ <a href="#" onclick="toggleMode();return false;">إنشاء حساب جديد</a>';
+  } else {
+    btn.textContent = 'إنشاء حساب'; title.textContent = 'انضم إلينا';
+    switchText.innerHTML = 'لديك حساب بالفعل؟ <a href="#" onclick="toggleMode();return false;">تسجيل الدخول</a>';
+  }
+  document.getElementById('msg').textContent = '';
+}
+
+function simpleEncrypt(text) {
+  return btoa(unescape(encodeURIComponent(text)));
+}
+
+async function handleAuth(e) {
+  e.preventDefault();
+  const msgEl = document.getElementById('msg');
+  const btn = document.getElementById('submitBtn');
+  
+  if (document.querySelector('.honeypot').value) return;
+
+  const lockoutEnd = localStorage.getItem('lockoutEnd');
+  if (lockoutEnd && Date.now() < parseInt(lockoutEnd)) {
+    msgEl.textContent = '⚠️ الحساب مقفل مؤقتاً. يرجى الانتظار.';
+    msgEl.className = 'msg error';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'جاري المعالجة...';
+  msgEl.textContent = '';
+
+  const email = document.getElementById('email').value;
+  const phone = document.getElementById('phone').value;
+  const password = document.getElementById('password').value;
+
+  try {
+    if (currentMethod === 'email' && !email.includes('@')) {
+      msgEl.textContent = '⚠️ يرجى إدخال بريد إلكتروني صحيح';
+      msgEl.className = 'msg error';
+      btn.disabled = false;
+      btn.textContent = isLogin ? 'تسجيل الدخول' : 'إنشاء حساب';
+      return;
+    }
+
+    if (password.length < 6) {
+      msgEl.textContent = '⚠️ كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+      msgEl.className = 'msg error';
+      btn.disabled = false;
+      btn.textContent = isLogin ? 'تسجيل الدخول' : 'إنشاء حساب';
+      return;
+    }
+
+    const encryptedPassword = simpleEncrypt(password);
+
+    const user = { 
+      email: currentMethod === 'email' ? email : phone,
+      method: currentMethod,
+      loginTime: new Date().toISOString(),
+      lastLogin: new Date().toLocaleString('ar-SY'),
+      passwordHash: encryptedPassword.substring(0, 10) + '...'
+    };
+    
+    localStorage.setItem('simUser', JSON.stringify(user));
+    localStorage.removeItem('failedAttempts');
+    localStorage.removeItem('lockoutEnd');
+    
+    msgEl.textContent = isLogin ? '✅ تم تسجيل الدخول بنجاح!' : '✅ تم إنشاء الحساب بنجاح!';
+    msgEl.className = 'msg success';
+    
+    setTimeout(() => showUserCard(user), 800);
+    
+  } catch (error) {
+    msgEl.textContent = '❌ حدث خطأ: ' + error.message;
+    msgEl.className = 'msg error';
+    
+    failedAttempts++;
+    localStorage.setItem('failedAttempts', failedAttempts);
+    
+    if (failedAttempts >= MAX_ATTEMPTS) {
+      const lockoutEnd = Date.now() + LOCKOUT_TIME;
+      localStorage.setItem('lockoutEnd', lockoutEnd);
+      msgEl.textContent = `🔒 تم قفل الحساب لمدة 15 دقيقة`;
+      msgEl.className = 'msg error';
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = isLogin ? 'تسجيل الدخول' : 'إنشاء حساب';
+  }
+}
+
+function showUserCard(user) {
+  document.getElementById('loginCard').style.display = 'none';
+  document.getElementById('userCard').style.display = 'block';
+  document.getElementById('userEmail').textContent = user.email;
+  document.getElementById('userName').textContent = user.name || 'مرحباً بك';
+  if (user.lastLogin) {
+    document.getElementById('lastLogin').textContent = 'آخر دخول: ' + user.lastLogin;
+  }
+  if(user.picture && user.picture.startsWith('http')) {
+    document.getElementById('userAvatar').innerHTML = `<img src="${user.picture}" alt="avatar">`;
+  }
+}
+
+function handleGoogleLogin() {
+  const msgEl = document.getElementById('msg');
+  msgEl.textContent = '🔄 جاري الاتصال بخوادم Google...';
+  msgEl.className = 'msg';
+  
+  setTimeout(() => {
+    const googleUser = {
+      email: 'user@gmail.com',
+      name: 'مستخدم Google',
+      picture: 'https://www.svgrepo.com/show/475656/google-color.svg',
+      method: 'google',
+      loginTime: new Date().toISOString(),
+      lastLogin: new Date().toLocaleString('ar-SY')
+    };
+    localStorage.setItem('simUser', JSON.stringify(googleUser));
+    msgEl.textContent = '✅ تم تسجيل الدخول عبر Google بنجاح!';
+    msgEl.className = 'msg success';
+    setTimeout(() => showUserCard(googleUser), 800);
+  }, 1500);
+}
+
+function goToDashboard() { 
+  alert('🚀 لوحة التحكم قيد الإنشاء - ستُضاف قريباً!'); 
+}
+
+function logout() {
+  localStorage.removeItem('simUser');
+  document.getElementById('userCard').style.display = 'none';
+  document.getElementById('loginCard').style.display = 'block';
+  document.getElementById('msg').textContent = '';
+  document.querySelector('.logo-title').textContent = 'Sim Store';
+  document.getElementById('submitBtn').textContent = 'تسجيل الدخول';
+  document.getElementById('switchText').innerHTML = 'ليس لديك حساب؟ <a href="#" onclick="toggleMode();return false;">إنشاء حساب جديد</a>';
+  isLogin = true;
+  failedAttempts = 0;
+}
+</script>
+</body>
+</html>
